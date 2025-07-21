@@ -1,0 +1,21 @@
+syntax = "proto3";
+
+package generator;
+
+option go_package = "generator";
+
+import "api.proto";
+
+message GenIDRequest {
+}
+
+message GenIDResponse {
+   int64 id = 1;
+   string message = 2;
+}
+
+service IDGenerateService {
+   rpc GenID(GenIDRequest) returns(GenIDResponse) {
+      option (api.post) = "/api/id/generate";
+   }
+}

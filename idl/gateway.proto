@@ -1,0 +1,168 @@
+syntax = "proto3";
+
+package gateway;
+
+option go_package = "gateway";
+
+import "api.proto";
+
+service Gateway {
+    // C端用户创建评论
+   rpc CreateReview(CreateReviewReq) returns(CreateReviewResp) {
+      option (api.post) = "/v1/review";
+   }
+
+   // C端用户获取评论
+   rpc GetReview(GetReviewReq) returns(GetReviewResp) {
+      option (api.get) = "/v1/review/{review_id}";
+   }
+
+   // O端审核评价
+   rpc AuditReview(AuditReviewReq) returns(AuditReviewResp) {
+      option (api.post) = "/v1/review/audit";
+   }
+
+   // B端商家回复评价
+   rpc ReplyReview(ReplyReviewReq) returns(ReplyReviewResp) {
+      option (api.post) = "/v1/review/reply";
+   }
+
+   // B端商家申诉评价
+   rpc AppealReview(AppealReviewReq) returns(AppealReviewResp) {
+      option (api.post) = "/v1/review/appeal";
+   }
+
+   // O端审核商家申诉
+   rpc AuditAppeal(AuditAppealReq) returns(AuditAppealResp) {
+      option (api.post) = "/v1/appeal/audit";
+   }
+
+   // C端查看用户所有评价
+   rpc ListReviewByUserID(ListReviewByUserIDReq) returns(ListReviewByUserIDResp) {
+      option (api.get) = "/v1/{user_id}/reviews";
+   }
+
+   // 根据商家ID分页
+   rpc ListReviewByStoreID(ListReviewByStoreIDReq) returns(ListReviewByStoreIDResp) {}
+}
+
+// 创建评价的参数
+message CreateReviewReq {
+	int64 userID = 1[(api.form)="user_id"];
+	int64 orderID = 2[(api.form)="order_id"];
+	int64 storeID = 3[(api.form)="store_id"];
+	int32 score = 4[(api.form)="score"];
+	int32 serviceScore = 5[(api.form)="service_score"];
+	int32 expressScore = 6[(api.form)="express_score"];
+	string content = 7[(api.form)="content"];
+	string picInfo = 8[(api.form)="pic_info"];
+	string videoInfo = 9[(api.form)="video_info"];
+	bool anonymous = 10[(api.form)="anonymous"];
+}
+// 创建评价的回复
+message CreateReviewResp {
+	int64 reviewID = 1;
+}
+
+// 获取评价详情的请求参数
+message GetReviewReq {
+	int64 reviewID = 1 [(api.form)="review_id"];
+}
+
+// 获取评价详情的响应
+message GetReviewResp {
+	ReviewInfo data = 1;
+}
+
+// 评价信息
+message ReviewInfo{
+	int64 reviewID = 1;
+	int64 userID = 2;
+	int64 orderID = 3;
+	int32 score = 4;
+	int32 serviceScore = 5;
+	int32 expressScore = 6;
+	string content = 7;
+	string picInfo = 8;
+	string videoInfo = 9;
+	int32 status = 10;
+}
+
+// 审核评价的请求
+message AuditReviewReq {
+	int64 reviewID = 1 [(api.form)="review_id"];
+	int32 status = 2 [(api.form)="status"];
+	string opUser = 3 [(api.form)="op_user"];
+	string opReason = 4 [(api.form)="op_reason"];
+	optional string opRemarks = 5 [(api.form)="op_remarks"];
+}
+
+// 审核评价的返回值
+message AuditReviewResp {
+	int64 reviewID = 1;
+	int32 status = 2;
+}
+
+// 回复评价的请求
+message ReplyReviewReq{
+	int64 reviewID = 1 [(api.form)="review_id"];
+	int64 storeID = 2 [(api.form)="store_id"];
+	string content = 3 [(api.form)="content"];
+	string picInfo = 4 [(api.form)="pic_info"];
+	string videoInfo = 5 [(api.form)="video_info"];
+}
+
+// 回复评价的返回值
+message ReplyReviewResp{
+	int64 replyID = 1;
+}
+
+// AppealReviewReq 申诉评价的请求参数
+message AppealReviewReq{
+	int64 reviewID = 1 [(api.form)="review_id"];
+	int64 storeID = 2 [(api.form)="store_id"];
+	string reason = 3 [(api.form)="reason"];
+	string content = 4 [(api.form)="content"];
+	string picInfo = 5 [(api.form)="pic_info"];
+	string videoInfo = 6 [(api.form)="video_info"];
+}
+
+// 对评价进行申诉的返回值
+message AppealReviewResp{
+    int64 appealID = 1;
+}
+
+// 对申诉进行审核的请求
+message AuditAppealReq{
+	int64 appealID = 1 [(api.form)="appeal_id"];
+	int64 reviewID = 2 [(api.form)="review_id"];
+	int32 status = 3 [(api.form)="status"];
+	string opUser = 4 [(api.form)="op_user"];
+	optional string opRemarks = 5 [(api.form)="op_remarks"];
+}
+
+// 对申诉进行审核的返回值
+message AuditAppealResp{
+}
+
+// 用户评价列表的请求
+message ListReviewByUserIDReq{
+	int64 userID = 1 [(api.form)="user_id"];
+	int32 page = 2 [(api.form)="page"];
+	int32 size = 3 [(api.form)="size"];
+}
+
+// 用户评价列表的返回值
+message ListReviewByUserIDResp{
+	repeated ReviewInfo list = 1;
+}
+
+message ListReviewByStoreIDReq {
+	int64 storeID = 1 [(api.form)="store_id"];
+	int32 page = 2 [(api.form)="page"];
+	int32 size = 3 [(api.form)="size"];
+}
+
+message ListReviewByStoreIDResp {
+	repeated ReviewInfo list = 1;
+}

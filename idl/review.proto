@@ -1,0 +1,30 @@
+syntax = "proto3";
+
+package review;
+
+option go_package = "review";
+
+import "api.proto";
+import "base.proto";
+
+message CreateReviewRequest {
+   int64 UserId = 1 [(api.vt).gt="0"];
+   int64 OrderId = 2 [(api.vt).gt="0"];
+   int32 ItemScore = 3 [(api.vt)={in:["1", "2", "3", "4", "5"]}];
+   int32 ServiceScore = 4 [(api.vt)={in:["1", "2", "3", "4", "5"]}];
+   int32 ExpressScore = 5 [(api.vt)={in:["1", "2", "3", "4", "5"]}];
+   string Content = 6 [(api.vt).min_size="8", (api.vt).max_size="255"];
+   string PicInfo = 7;
+   string VideoInfo = 8;
+   bool Anonymous = 9;
+}
+
+message CreateReviewResponse {
+   int64 ReviewId = 1;
+
+   base.BaseResp BaseResp = 255;
+}
+
+service ReviewService {
+   rpc CreateReview(CreateReviewRequest) returns(CreateReviewResponse) {}
+}

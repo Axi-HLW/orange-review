@@ -1,0 +1,11 @@
+syntax = "proto3";
+
+package base;
+
+option go_package = "base";
+
+message BaseResp {
+    int32 StatusCode = 1;
+    string StatusMsg = 2;
+    map<string, string> Extra = 3; // 从proto3开始，optional被移除了，所有字段都是可选的。
+}
