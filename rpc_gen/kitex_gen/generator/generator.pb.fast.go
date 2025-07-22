@@ -5,7 +5,7 @@ package generator
 import (
 	fmt "fmt"
 	fastpb "github.com/cloudwego/fastpb"
-	api "github.com/yzc/orange-review/rpc_gen/kitex_gen/api"
+	base "github.com/yzc/orange-review/rpc_gen/kitex_gen/base"
 )
 
 var (
@@ -33,8 +33,8 @@ func (x *GenIDResponse) FastRead(buf []byte, _type int8, number int32) (offset i
 		if err != nil {
 			goto ReadFieldError
 		}
-	case 2:
-		offset, err = x.fastReadField2(buf, _type)
+	case 255:
+		offset, err = x.fastReadField255(buf, _type)
 		if err != nil {
 			goto ReadFieldError
 		}
@@ -56,9 +56,14 @@ func (x *GenIDResponse) fastReadField1(buf []byte, _type int8) (offset int, err 
 	return offset, err
 }
 
-func (x *GenIDResponse) fastReadField2(buf []byte, _type int8) (offset int, err error) {
-	x.Message, offset, err = fastpb.ReadString(buf, _type)
-	return offset, err
+func (x *GenIDResponse) fastReadField255(buf []byte, _type int8) (offset int, err error) {
+	var v base.BaseResp
+	offset, err = fastpb.ReadMessage(buf, _type, &v)
+	if err != nil {
+		return offset, err
+	}
+	x.BaseResp = &v
+	return offset, nil
 }
 
 func (x *GenIDRequest) FastWrite(buf []byte) (offset int) {
@@ -73,7 +78,7 @@ func (x *GenIDResponse) FastWrite(buf []byte) (offset int) {
 		return offset
 	}
 	offset += x.fastWriteField1(buf[offset:])
-	offset += x.fastWriteField2(buf[offset:])
+	offset += x.fastWriteField255(buf[offset:])
 	return offset
 }
 
@@ -85,11 +90,11 @@ func (x *GenIDResponse) fastWriteField1(buf []byte) (offset int) {
 	return offset
 }
 
-func (x *GenIDResponse) fastWriteField2(buf []byte) (offset int) {
-	if x.Message == "" {
+func (x *GenIDResponse) fastWriteField255(buf []byte) (offset int) {
+	if x.BaseResp == nil {
 		return offset
 	}
-	offset += fastpb.WriteString(buf[offset:], 2, x.GetMessage())
+	offset += fastpb.WriteMessage(buf[offset:], 255, x.GetBaseResp())
 	return offset
 }
 
@@ -105,7 +110,7 @@ func (x *GenIDResponse) Size() (n int) {
 		return n
 	}
 	n += x.sizeField1()
-	n += x.sizeField2()
+	n += x.sizeField255()
 	return n
 }
 
@@ -117,19 +122,19 @@ func (x *GenIDResponse) sizeField1() (n int) {
 	return n
 }
 
-func (x *GenIDResponse) sizeField2() (n int) {
-	if x.Message == "" {
+func (x *GenIDResponse) sizeField255() (n int) {
+	if x.BaseResp == nil {
 		return n
 	}
-	n += fastpb.SizeString(2, x.GetMessage())
+	n += fastpb.SizeMessage(255, x.GetBaseResp())
 	return n
 }
 
 var fieldIDToName_GenIDRequest = map[int32]string{}
 
 var fieldIDToName_GenIDResponse = map[int32]string{
-	1: "Id",
-	2: "Message",
+	1:   "Id",
+	255: "BaseResp",
 }
 
-var _ = api.File_api_proto
+var _ = base.File_base_proto

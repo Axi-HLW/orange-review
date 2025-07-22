@@ -7,7 +7,7 @@
 package gateway
 
 import (
-	_ "github.com/yzc/orange-review/app/gateway/hertz_gen/github.com/yzc/orange-review/app/review_server/kitex_gen/api"
+	_ "github.com/yzc/orange-review/rpc_gen/kitex_gen/api"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	reflect "reflect"
