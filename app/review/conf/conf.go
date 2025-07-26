@@ -23,6 +23,11 @@ type Config struct {
 	MySQL    MySQL    `yaml:"mysql"`
 	Redis    Redis    `yaml:"redis"`
 	Registry Registry `yaml:"registry"`
+	Elasticsearch Elasticsearch `yaml:"elasticsearch"`
+}
+
+type Elasticsearch struct {
+	Addr string `yaml:"addr"`
 }
 
 type MySQL struct {

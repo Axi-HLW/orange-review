@@ -10,6 +10,7 @@ import (
 	"github.com/cloudwego/kitex/server"
 	kitexlogrus "github.com/kitex-contrib/obs-opentelemetry/logging/logrus"
 	consul "github.com/kitex-contrib/registry-consul"
+	"github.com/yzc/orange-review/app/review/biz/dal"
 	"github.com/yzc/orange-review/app/review/conf"
 	"github.com/yzc/orange-review/app/review/infra/rpc"
 	"github.com/yzc/orange-review/rpc_gen/kitex_gen/review/reviewservice"
@@ -21,6 +22,8 @@ func main() {
 	opts := kitexInit()
 
 	rpc.InitAllClient()
+
+	dal.Init()
 
 	svr := reviewservice.NewServer(new(ReviewServiceImpl), opts...)
 

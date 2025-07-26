@@ -1,0 +1,22 @@
+services:
+  consul:
+    image: 'hashicorp/consul'
+    ports:
+      - 8500:8500
+  mysql:
+    image: "mysql:8.0.32"
+    ports:
+      - 3306:3306
+    volumes:
+      # 挂载配置文件目录
+      - ./mysql/conf:/etc/mysql/conf.d
+
+      # 挂载数据目录（推荐持久化）
+      - ./mysql/data:/var/lib/mysql
+    environment:
+      - MYSQL_DATABASE=gomalldb
+      - MYSQL_ROOT_PASSWORD=1234
+  redis:
+    image: 'redis:6.2.18'
+    ports:
+      - 6379:6379

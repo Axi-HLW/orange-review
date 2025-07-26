@@ -14,10 +14,13 @@ registry:
   password: ""
 
 mysql:
-  dsn: "gorm:gorm@tcp(127.0.0.1:3306)/gorm?charset=utf8mb4&parseTime=True&loc=Local"
+  dsn: "root:1234@tcp(127.0.0.1:3306)/gomalldb?charset=utf8mb4&parseTime=True&loc=Local"
 
 redis:
   address: "127.0.0.1:6379"
   username: ""
   password: ""
   db: 0
+
+elasticsearch:
+  addr: "127.0.0.1:9200"

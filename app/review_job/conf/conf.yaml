@@ -1,0 +1,9 @@
+elasticsearch:
+  addr: "http://127.0.0.1:9200"
+  index: "review"
+
+kafka:
+  addrs:
+    - "localhost:9092"
+  group_id: "review-job"
+  topic: "topic1"

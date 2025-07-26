@@ -1,6 +1,7 @@
 package mysql
 
 import (
+	"github.com/yzc/orange-review/app/review/biz/model"
 	"github.com/yzc/orange-review/app/review/conf"
 
 	"gorm.io/driver/mysql"
@@ -22,4 +23,9 @@ func Init() {
 	if err != nil {
 		panic(err)
 	}
+	DB.AutoMigrate(
+		&model.ReviewInfo{},
+		&model.ReviewAppealInfo{},
+		&model.ReviewReplyInfo{},
+	)
 }
