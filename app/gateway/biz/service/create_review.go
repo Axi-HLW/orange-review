@@ -36,6 +36,9 @@ func (h *CreateReviewService) Run(req *gateway.CreateReviewReq) (resp *gateway.C
 		PicInfo:      req.PicInfo,
 		VideoInfo:    req.VideoInfo,
 		Anonymous:    req.Anonymous,
+		SkuId:        req.SkuID,
+		SpuId:        req.SpuID,
+		StoreId:      req.StoreID,
 	}
 	rpcResp, err := rpc.ReviewClient.CreateReview(h.Context, request)
 	resp = &gateway.CreateReviewResp{

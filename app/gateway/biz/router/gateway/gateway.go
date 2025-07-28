@@ -30,6 +30,27 @@ func Register(r *server.Hertz) {
 		_review.POST("/reply", append(_replyreviewMw(), gateway.ReplyReview)...)
 		_review.GET("/{review_id}", append(_getreviewMw(), gateway.GetReview)...)
 		{
+			_sku := _v1.Group("/sku", _skuMw()...)
+			{
+				__7bsku_id_7d := _sku.Group("/{sku_id}", __7bsku_id_7dMw()...)
+				__7bsku_id_7d.GET("/reviews", append(_listreviewbyskuidMw(), gateway.ListReviewBySkuID)...)
+			}
+		}
+		{
+			_spu := _v1.Group("/spu", _spuMw()...)
+			{
+				__7bspu_id_7d := _spu.Group("/{spu_id}", __7bspu_id_7dMw()...)
+				__7bspu_id_7d.GET("/reviews", append(_listreviewbyspuidMw(), gateway.ListReviewBySpuID)...)
+			}
+		}
+		{
+			_store := _v1.Group("/store", _storeMw()...)
+			{
+				_store_id := _store.Group("/:store_id", _store_idMw()...)
+				_store_id.GET("/reviews", append(_listreviewbystoreidMw(), gateway.ListReviewByStoreID)...)
+			}
+		}
+		{
 			__7buser_id_7d := _v1.Group("/{user_id}", __7buser_id_7dMw()...)
 			__7buser_id_7d.GET("/reviews", append(_listreviewbyuseridMw(), gateway.ListReviewByUserID)...)
 		}

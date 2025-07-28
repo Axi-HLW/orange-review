@@ -10,7 +10,7 @@ import (
 
 var (
 	ESClient *elasticsearch.TypedClient
-	Index string
+	Index    string
 )
 
 func InitES() {
@@ -33,7 +33,7 @@ func IndexDocument(d map[string]interface{}) {
 	reviewID := d["review_id"].(string)
 	// 添加文档
 	resp, err := ESClient.Index(Index).
-	    Id(reviewID).
+		Id(reviewID).
 		Document(d).
 		Do(context.Background())
 	if err != nil {

@@ -156,3 +156,63 @@ func ListReviewByUserID(ctx context.Context, c *app.RequestContext) {
 
 	utils.SendSuccessResponse(ctx, c, consts.StatusOK, resp)
 }
+
+// ListReviewByStoreID .
+// @router /v1/store/{store_id}/reviews [GET]
+func ListReviewByStoreID(ctx context.Context, c *app.RequestContext) {
+	var err error
+	var req gateway.ListReviewByStoreIDReq
+	err = c.BindAndValidate(&req)
+	if err != nil {
+		utils.SendErrResponse(ctx, c, consts.StatusOK, err)
+		return
+	}
+
+	resp, err := service.NewListReviewByStoreIDService(ctx, c).Run(&req)
+
+	if err != nil {
+		utils.SendErrResponse(ctx, c, consts.StatusOK, err)
+		return
+	}
+	utils.SendSuccessResponse(ctx, c, consts.StatusOK, resp)
+}
+
+// ListReviewBySpuID .
+// @router /v1/spu/{spu_id}/reviews [GET]
+func ListReviewBySpuID(ctx context.Context, c *app.RequestContext) {
+	var err error
+	var req gateway.ListReviewBySpuIDReq
+	err = c.BindAndValidate(&req)
+	if err != nil {
+		utils.SendErrResponse(ctx, c, consts.StatusOK, err)
+		return
+	}
+
+	resp, err := service.NewListReviewBySpuIDService(ctx, c).Run(&req)
+
+	if err != nil {
+		utils.SendErrResponse(ctx, c, consts.StatusOK, err)
+		return
+	}
+	utils.SendSuccessResponse(ctx, c, consts.StatusOK, resp)
+}
+
+// ListReviewBySkuID .
+// @router /v1/sku/{sku_id}/reviews [GET]
+func ListReviewBySkuID(ctx context.Context, c *app.RequestContext) {
+	var err error
+	var req gateway.ListReviewBySkuIDReq
+	err = c.BindAndValidate(&req)
+	if err != nil {
+		utils.SendErrResponse(ctx, c, consts.StatusOK, err)
+		return
+	}
+
+	resp, err := service.NewListReviewBySkuIDService(ctx, c).Run(&req)
+
+	if err != nil {
+		utils.SendErrResponse(ctx, c, consts.StatusOK, err)
+		return
+	}
+	utils.SendSuccessResponse(ctx, c, consts.StatusOK, resp)
+}

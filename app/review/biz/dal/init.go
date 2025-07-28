@@ -1,7 +1,7 @@
 package dal
 
 import (
-	// "github.com/yzc/orange-review/app/review/biz/dal/es"
+	"github.com/yzc/orange-review/app/review/biz/dal/es"
 	"github.com/yzc/orange-review/app/review/biz/dal/mysql"
 	// "github.com/yzc/orange-review/app/review/biz/dal/redis"
 )
@@ -10,5 +10,5 @@ import (
 func Init() {
 	// redis.Init()
 	mysql.Init()
-	// es.Init()
+	es.Init()
 }

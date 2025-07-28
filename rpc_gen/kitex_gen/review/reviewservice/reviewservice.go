@@ -22,6 +22,27 @@ var serviceMethods = map[string]kitex.MethodInfo{
 		false,
 		kitex.WithStreamingMode(kitex.StreamingUnary),
 	),
+	"ListReviewByStoreID": kitex.NewMethodInfo(
+		listReviewByStoreIDHandler,
+		newListReviewByStoreIDArgs,
+		newListReviewByStoreIDResult,
+		false,
+		kitex.WithStreamingMode(kitex.StreamingUnary),
+	),
+	"ListReviewBySpuID": kitex.NewMethodInfo(
+		listReviewBySpuIDHandler,
+		newListReviewBySpuIDArgs,
+		newListReviewBySpuIDResult,
+		false,
+		kitex.WithStreamingMode(kitex.StreamingUnary),
+	),
+	"ListReviewBySkuID": kitex.NewMethodInfo(
+		listReviewBySkuIDHandler,
+		newListReviewBySkuIDArgs,
+		newListReviewBySkuIDResult,
+		false,
+		kitex.WithStreamingMode(kitex.StreamingUnary),
+	),
 }
 
 var (
@@ -241,6 +262,465 @@ func (p *CreateReviewResult) GetResult() interface{} {
 	return p.Success
 }
 
+func listReviewByStoreIDHandler(ctx context.Context, handler interface{}, arg, result interface{}) error {
+	switch s := arg.(type) {
+	case *streaming.Args:
+		st := s.Stream
+		req := new(review.ListReviewByStoreIDReq)
+		if err := st.RecvMsg(req); err != nil {
+			return err
+		}
+		resp, err := handler.(review.ReviewService).ListReviewByStoreID(ctx, req)
+		if err != nil {
+			return err
+		}
+		return st.SendMsg(resp)
+	case *ListReviewByStoreIDArgs:
+		success, err := handler.(review.ReviewService).ListReviewByStoreID(ctx, s.Req)
+		if err != nil {
+			return err
+		}
+		realResult := result.(*ListReviewByStoreIDResult)
+		realResult.Success = success
+		return nil
+	default:
+		return errInvalidMessageType
+	}
+}
+func newListReviewByStoreIDArgs() interface{} {
+	return &ListReviewByStoreIDArgs{}
+}
+
+func newListReviewByStoreIDResult() interface{} {
+	return &ListReviewByStoreIDResult{}
+}
+
+type ListReviewByStoreIDArgs struct {
+	Req *review.ListReviewByStoreIDReq
+}
+
+func (p *ListReviewByStoreIDArgs) FastRead(buf []byte, _type int8, number int32) (n int, err error) {
+	if !p.IsSetReq() {
+		p.Req = new(review.ListReviewByStoreIDReq)
+	}
+	return p.Req.FastRead(buf, _type, number)
+}
+
+func (p *ListReviewByStoreIDArgs) FastWrite(buf []byte) (n int) {
+	if !p.IsSetReq() {
+		return 0
+	}
+	return p.Req.FastWrite(buf)
+}
+
+func (p *ListReviewByStoreIDArgs) Size() (n int) {
+	if !p.IsSetReq() {
+		return 0
+	}
+	return p.Req.Size()
+}
+
+func (p *ListReviewByStoreIDArgs) Marshal(out []byte) ([]byte, error) {
+	if !p.IsSetReq() {
+		return out, nil
+	}
+	return proto.Marshal(p.Req)
+}
+
+func (p *ListReviewByStoreIDArgs) Unmarshal(in []byte) error {
+	msg := new(review.ListReviewByStoreIDReq)
+	if err := proto.Unmarshal(in, msg); err != nil {
+		return err
+	}
+	p.Req = msg
+	return nil
+}
+
+var ListReviewByStoreIDArgs_Req_DEFAULT *review.ListReviewByStoreIDReq
+
+func (p *ListReviewByStoreIDArgs) GetReq() *review.ListReviewByStoreIDReq {
+	if !p.IsSetReq() {
+		return ListReviewByStoreIDArgs_Req_DEFAULT
+	}
+	return p.Req
+}
+
+func (p *ListReviewByStoreIDArgs) IsSetReq() bool {
+	return p.Req != nil
+}
+
+func (p *ListReviewByStoreIDArgs) GetFirstArgument() interface{} {
+	return p.Req
+}
+
+type ListReviewByStoreIDResult struct {
+	Success *review.ListReviewByStoreIDResp
+}
+
+var ListReviewByStoreIDResult_Success_DEFAULT *review.ListReviewByStoreIDResp
+
+func (p *ListReviewByStoreIDResult) FastRead(buf []byte, _type int8, number int32) (n int, err error) {
+	if !p.IsSetSuccess() {
+		p.Success = new(review.ListReviewByStoreIDResp)
+	}
+	return p.Success.FastRead(buf, _type, number)
+}
+
+func (p *ListReviewByStoreIDResult) FastWrite(buf []byte) (n int) {
+	if !p.IsSetSuccess() {
+		return 0
+	}
+	return p.Success.FastWrite(buf)
+}
+
+func (p *ListReviewByStoreIDResult) Size() (n int) {
+	if !p.IsSetSuccess() {
+		return 0
+	}
+	return p.Success.Size()
+}
+
+func (p *ListReviewByStoreIDResult) Marshal(out []byte) ([]byte, error) {
+	if !p.IsSetSuccess() {
+		return out, nil
+	}
+	return proto.Marshal(p.Success)
+}
+
+func (p *ListReviewByStoreIDResult) Unmarshal(in []byte) error {
+	msg := new(review.ListReviewByStoreIDResp)
+	if err := proto.Unmarshal(in, msg); err != nil {
+		return err
+	}
+	p.Success = msg
+	return nil
+}
+
+func (p *ListReviewByStoreIDResult) GetSuccess() *review.ListReviewByStoreIDResp {
+	if !p.IsSetSuccess() {
+		return ListReviewByStoreIDResult_Success_DEFAULT
+	}
+	return p.Success
+}
+
+func (p *ListReviewByStoreIDResult) SetSuccess(x interface{}) {
+	p.Success = x.(*review.ListReviewByStoreIDResp)
+}
+
+func (p *ListReviewByStoreIDResult) IsSetSuccess() bool {
+	return p.Success != nil
+}
+
+func (p *ListReviewByStoreIDResult) GetResult() interface{} {
+	return p.Success
+}
+
+func listReviewBySpuIDHandler(ctx context.Context, handler interface{}, arg, result interface{}) error {
+	switch s := arg.(type) {
+	case *streaming.Args:
+		st := s.Stream
+		req := new(review.ListReviewBySpuIDReq)
+		if err := st.RecvMsg(req); err != nil {
+			return err
+		}
+		resp, err := handler.(review.ReviewService).ListReviewBySpuID(ctx, req)
+		if err != nil {
+			return err
+		}
+		return st.SendMsg(resp)
+	case *ListReviewBySpuIDArgs:
+		success, err := handler.(review.ReviewService).ListReviewBySpuID(ctx, s.Req)
+		if err != nil {
+			return err
+		}
+		realResult := result.(*ListReviewBySpuIDResult)
+		realResult.Success = success
+		return nil
+	default:
+		return errInvalidMessageType
+	}
+}
+func newListReviewBySpuIDArgs() interface{} {
+	return &ListReviewBySpuIDArgs{}
+}
+
+func newListReviewBySpuIDResult() interface{} {
+	return &ListReviewBySpuIDResult{}
+}
+
+type ListReviewBySpuIDArgs struct {
+	Req *review.ListReviewBySpuIDReq
+}
+
+func (p *ListReviewBySpuIDArgs) FastRead(buf []byte, _type int8, number int32) (n int, err error) {
+	if !p.IsSetReq() {
+		p.Req = new(review.ListReviewBySpuIDReq)
+	}
+	return p.Req.FastRead(buf, _type, number)
+}
+
+func (p *ListReviewBySpuIDArgs) FastWrite(buf []byte) (n int) {
+	if !p.IsSetReq() {
+		return 0
+	}
+	return p.Req.FastWrite(buf)
+}
+
+func (p *ListReviewBySpuIDArgs) Size() (n int) {
+	if !p.IsSetReq() {
+		return 0
+	}
+	return p.Req.Size()
+}
+
+func (p *ListReviewBySpuIDArgs) Marshal(out []byte) ([]byte, error) {
+	if !p.IsSetReq() {
+		return out, nil
+	}
+	return proto.Marshal(p.Req)
+}
+
+func (p *ListReviewBySpuIDArgs) Unmarshal(in []byte) error {
+	msg := new(review.ListReviewBySpuIDReq)
+	if err := proto.Unmarshal(in, msg); err != nil {
+		return err
+	}
+	p.Req = msg
+	return nil
+}
+
+var ListReviewBySpuIDArgs_Req_DEFAULT *review.ListReviewBySpuIDReq
+
+func (p *ListReviewBySpuIDArgs) GetReq() *review.ListReviewBySpuIDReq {
+	if !p.IsSetReq() {
+		return ListReviewBySpuIDArgs_Req_DEFAULT
+	}
+	return p.Req
+}
+
+func (p *ListReviewBySpuIDArgs) IsSetReq() bool {
+	return p.Req != nil
+}
+
+func (p *ListReviewBySpuIDArgs) GetFirstArgument() interface{} {
+	return p.Req
+}
+
+type ListReviewBySpuIDResult struct {
+	Success *review.ListReviewBySpuIDResp
+}
+
+var ListReviewBySpuIDResult_Success_DEFAULT *review.ListReviewBySpuIDResp
+
+func (p *ListReviewBySpuIDResult) FastRead(buf []byte, _type int8, number int32) (n int, err error) {
+	if !p.IsSetSuccess() {
+		p.Success = new(review.ListReviewBySpuIDResp)
+	}
+	return p.Success.FastRead(buf, _type, number)
+}
+
+func (p *ListReviewBySpuIDResult) FastWrite(buf []byte) (n int) {
+	if !p.IsSetSuccess() {
+		return 0
+	}
+	return p.Success.FastWrite(buf)
+}
+
+func (p *ListReviewBySpuIDResult) Size() (n int) {
+	if !p.IsSetSuccess() {
+		return 0
+	}
+	return p.Success.Size()
+}
+
+func (p *ListReviewBySpuIDResult) Marshal(out []byte) ([]byte, error) {
+	if !p.IsSetSuccess() {
+		return out, nil
+	}
+	return proto.Marshal(p.Success)
+}
+
+func (p *ListReviewBySpuIDResult) Unmarshal(in []byte) error {
+	msg := new(review.ListReviewBySpuIDResp)
+	if err := proto.Unmarshal(in, msg); err != nil {
+		return err
+	}
+	p.Success = msg
+	return nil
+}
+
+func (p *ListReviewBySpuIDResult) GetSuccess() *review.ListReviewBySpuIDResp {
+	if !p.IsSetSuccess() {
+		return ListReviewBySpuIDResult_Success_DEFAULT
+	}
+	return p.Success
+}
+
+func (p *ListReviewBySpuIDResult) SetSuccess(x interface{}) {
+	p.Success = x.(*review.ListReviewBySpuIDResp)
+}
+
+func (p *ListReviewBySpuIDResult) IsSetSuccess() bool {
+	return p.Success != nil
+}
+
+func (p *ListReviewBySpuIDResult) GetResult() interface{} {
+	return p.Success
+}
+
+func listReviewBySkuIDHandler(ctx context.Context, handler interface{}, arg, result interface{}) error {
+	switch s := arg.(type) {
+	case *streaming.Args:
+		st := s.Stream
+		req := new(review.ListReviewBySkuIDReq)
+		if err := st.RecvMsg(req); err != nil {
+			return err
+		}
+		resp, err := handler.(review.ReviewService).ListReviewBySkuID(ctx, req)
+		if err != nil {
+			return err
+		}
+		return st.SendMsg(resp)
+	case *ListReviewBySkuIDArgs:
+		success, err := handler.(review.ReviewService).ListReviewBySkuID(ctx, s.Req)
+		if err != nil {
+			return err
+		}
+		realResult := result.(*ListReviewBySkuIDResult)
+		realResult.Success = success
+		return nil
+	default:
+		return errInvalidMessageType
+	}
+}
+func newListReviewBySkuIDArgs() interface{} {
+	return &ListReviewBySkuIDArgs{}
+}
+
+func newListReviewBySkuIDResult() interface{} {
+	return &ListReviewBySkuIDResult{}
+}
+
+type ListReviewBySkuIDArgs struct {
+	Req *review.ListReviewBySkuIDReq
+}
+
+func (p *ListReviewBySkuIDArgs) FastRead(buf []byte, _type int8, number int32) (n int, err error) {
+	if !p.IsSetReq() {
+		p.Req = new(review.ListReviewBySkuIDReq)
+	}
+	return p.Req.FastRead(buf, _type, number)
+}
+
+func (p *ListReviewBySkuIDArgs) FastWrite(buf []byte) (n int) {
+	if !p.IsSetReq() {
+		return 0
+	}
+	return p.Req.FastWrite(buf)
+}
+
+func (p *ListReviewBySkuIDArgs) Size() (n int) {
+	if !p.IsSetReq() {
+		return 0
+	}
+	return p.Req.Size()
+}
+
+func (p *ListReviewBySkuIDArgs) Marshal(out []byte) ([]byte, error) {
+	if !p.IsSetReq() {
+		return out, nil
+	}
+	return proto.Marshal(p.Req)
+}
+
+func (p *ListReviewBySkuIDArgs) Unmarshal(in []byte) error {
+	msg := new(review.ListReviewBySkuIDReq)
+	if err := proto.Unmarshal(in, msg); err != nil {
+		return err
+	}
+	p.Req = msg
+	return nil
+}
+
+var ListReviewBySkuIDArgs_Req_DEFAULT *review.ListReviewBySkuIDReq
+
+func (p *ListReviewBySkuIDArgs) GetReq() *review.ListReviewBySkuIDReq {
+	if !p.IsSetReq() {
+		return ListReviewBySkuIDArgs_Req_DEFAULT
+	}
+	return p.Req
+}
+
+func (p *ListReviewBySkuIDArgs) IsSetReq() bool {
+	return p.Req != nil
+}
+
+func (p *ListReviewBySkuIDArgs) GetFirstArgument() interface{} {
+	return p.Req
+}
+
+type ListReviewBySkuIDResult struct {
+	Success *review.ListReviewBySkuIDResp
+}
+
+var ListReviewBySkuIDResult_Success_DEFAULT *review.ListReviewBySkuIDResp
+
+func (p *ListReviewBySkuIDResult) FastRead(buf []byte, _type int8, number int32) (n int, err error) {
+	if !p.IsSetSuccess() {
+		p.Success = new(review.ListReviewBySkuIDResp)
+	}
+	return p.Success.FastRead(buf, _type, number)
+}
+
+func (p *ListReviewBySkuIDResult) FastWrite(buf []byte) (n int) {
+	if !p.IsSetSuccess() {
+		return 0
+	}
+	return p.Success.FastWrite(buf)
+}
+
+func (p *ListReviewBySkuIDResult) Size() (n int) {
+	if !p.IsSetSuccess() {
+		return 0
+	}
+	return p.Success.Size()
+}
+
+func (p *ListReviewBySkuIDResult) Marshal(out []byte) ([]byte, error) {
+	if !p.IsSetSuccess() {
+		return out, nil
+	}
+	return proto.Marshal(p.Success)
+}
+
+func (p *ListReviewBySkuIDResult) Unmarshal(in []byte) error {
+	msg := new(review.ListReviewBySkuIDResp)
+	if err := proto.Unmarshal(in, msg); err != nil {
+		return err
+	}
+	p.Success = msg
+	return nil
+}
+
+func (p *ListReviewBySkuIDResult) GetSuccess() *review.ListReviewBySkuIDResp {
+	if !p.IsSetSuccess() {
+		return ListReviewBySkuIDResult_Success_DEFAULT
+	}
+	return p.Success
+}
+
+func (p *ListReviewBySkuIDResult) SetSuccess(x interface{}) {
+	p.Success = x.(*review.ListReviewBySkuIDResp)
+}
+
+func (p *ListReviewBySkuIDResult) IsSetSuccess() bool {
+	return p.Success != nil
+}
+
+func (p *ListReviewBySkuIDResult) GetResult() interface{} {
+	return p.Success
+}
+
 type kClient struct {
 	c client.Client
 }
@@ -256,6 +736,36 @@ func (p *kClient) CreateReview(ctx context.Context, Req *review.CreateReviewRequ
 	_args.Req = Req
 	var _result CreateReviewResult
 	if err = p.c.Call(ctx, "CreateReview", &_args, &_result); err != nil {
+		return
+	}
+	return _result.GetSuccess(), nil
+}
+
+func (p *kClient) ListReviewByStoreID(ctx context.Context, Req *review.ListReviewByStoreIDReq) (r *review.ListReviewByStoreIDResp, err error) {
+	var _args ListReviewByStoreIDArgs
+	_args.Req = Req
+	var _result ListReviewByStoreIDResult
+	if err = p.c.Call(ctx, "ListReviewByStoreID", &_args, &_result); err != nil {
+		return
+	}
+	return _result.GetSuccess(), nil
+}
+
+func (p *kClient) ListReviewBySpuID(ctx context.Context, Req *review.ListReviewBySpuIDReq) (r *review.ListReviewBySpuIDResp, err error) {
+	var _args ListReviewBySpuIDArgs
+	_args.Req = Req
+	var _result ListReviewBySpuIDResult
+	if err = p.c.Call(ctx, "ListReviewBySpuID", &_args, &_result); err != nil {
+		return
+	}
+	return _result.GetSuccess(), nil
+}
+
+func (p *kClient) ListReviewBySkuID(ctx context.Context, Req *review.ListReviewBySkuIDReq) (r *review.ListReviewBySkuIDResp, err error) {
+	var _args ListReviewBySkuIDArgs
+	_args.Req = Req
+	var _result ListReviewBySkuIDResult
+	if err = p.c.Call(ctx, "ListReviewBySkuID", &_args, &_result); err != nil {
 		return
 	}
 	return _result.GetSuccess(), nil

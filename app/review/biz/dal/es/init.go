@@ -6,7 +6,7 @@ import (
 )
 
 var (
-	ESClient *elasticsearch.Client
+	ESClient *elasticsearch.TypedClient
 )
 
 func Init() {
@@ -16,7 +16,7 @@ func Init() {
 		},
 	}
 	var err error
-	ESClient, err = elasticsearch.NewClient(cfg)
+	ESClient, err = elasticsearch.NewTypedClient(cfg)
 	if err != nil {
 		panic(err)
 	}

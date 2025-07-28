@@ -113,3 +113,46 @@ func TestListReviewByUserID(t *testing.T) {
 	// assert.DeepEqual(t, 200, resp.StatusCode())
 	// assert.DeepEqual(t, "null", string(resp.Body()))
 }
+
+func TestListReviewByStoreID(t *testing.T) {
+	h := server.Default()
+	h.GET("/v1/store/{store_id}/reviews", ListReviewByStoreID)
+	path := "/v1/store/{store_id}/reviews"                    // todo: you can customize query
+	body := &ut.Body{Body: bytes.NewBufferString(""), Len: 1} // todo: you can customize body
+	header := ut.Header{}                                     // todo: you can customize header
+	w := ut.PerformRequest(h.Engine, "GET", path, body, header)
+	resp := w.Result()
+	t.Log(string(resp.Body()))
+
+	// todo edit your unit test.
+	// assert.DeepEqual(t, 200, resp.StatusCode())
+	// assert.DeepEqual(t, "null", string(resp.Body()))
+}
+func TestListReviewBySpuID(t *testing.T) {
+	h := server.Default()
+	h.GET("/v1/spu/{spu_id}/reviews", ListReviewBySpuID)
+	path := "/v1/spu/{spu_id}/reviews"                        // todo: you can customize query
+	body := &ut.Body{Body: bytes.NewBufferString(""), Len: 1} // todo: you can customize body
+	header := ut.Header{}                                     // todo: you can customize header
+	w := ut.PerformRequest(h.Engine, "GET", path, body, header)
+	resp := w.Result()
+	t.Log(string(resp.Body()))
+
+	// todo edit your unit test.
+	// assert.DeepEqual(t, 200, resp.StatusCode())
+	// assert.DeepEqual(t, "null", string(resp.Body()))
+}
+func TestListReviewBySkuID(t *testing.T) {
+	h := server.Default()
+	h.GET("/v1/sku/{sku_id}/reviews", ListReviewBySkuID)
+	path := "/v1/sku/{sku_id}/reviews"                        // todo: you can customize query
+	body := &ut.Body{Body: bytes.NewBufferString(""), Len: 1} // todo: you can customize body
+	header := ut.Header{}                                     // todo: you can customize header
+	w := ut.PerformRequest(h.Engine, "GET", path, body, header)
+	resp := w.Result()
+	t.Log(string(resp.Body()))
+
+	// todo edit your unit test.
+	// assert.DeepEqual(t, 200, resp.StatusCode())
+	// assert.DeepEqual(t, "null", string(resp.Body()))
+}

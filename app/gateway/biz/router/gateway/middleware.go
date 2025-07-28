@@ -65,3 +65,53 @@ func _listreviewbyuseridMw() []app.HandlerFunc {
 	// your code...
 	return nil
 }
+
+func _skuMw() []app.HandlerFunc {
+	// your code...
+	return nil
+}
+
+func __7bsku_id_7dMw() []app.HandlerFunc {
+	// your code...
+	return nil
+}
+
+func _listreviewbyskuidMw() []app.HandlerFunc {
+	// your code...
+	return nil
+}
+
+func _spuMw() []app.HandlerFunc {
+	// your code...
+	return nil
+}
+
+func __7bspu_id_7dMw() []app.HandlerFunc {
+	// your code...
+	return nil
+}
+
+func _listreviewbyspuidMw() []app.HandlerFunc {
+	// your code...
+	return nil
+}
+
+func _storeMw() []app.HandlerFunc {
+	// your code...
+	return nil
+}
+
+func __7bstore_id_7dMw() []app.HandlerFunc {
+	// your code...
+	return nil
+}
+
+func _listreviewbystoreidMw() []app.HandlerFunc {
+	// your code...
+	return nil
+}
+
+func _store_idMw() []app.HandlerFunc {
+	// your code...
+	return nil
+}

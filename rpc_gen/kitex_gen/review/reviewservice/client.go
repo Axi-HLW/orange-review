@@ -12,6 +12,9 @@ import (
 // Client is designed to provide IDL-compatible methods with call-option parameter for kitex framework.
 type Client interface {
 	CreateReview(ctx context.Context, Req *review.CreateReviewRequest, callOptions ...callopt.Option) (r *review.CreateReviewResponse, err error)
+	ListReviewByStoreID(ctx context.Context, Req *review.ListReviewByStoreIDReq, callOptions ...callopt.Option) (r *review.ListReviewByStoreIDResp, err error)
+	ListReviewBySpuID(ctx context.Context, Req *review.ListReviewBySpuIDReq, callOptions ...callopt.Option) (r *review.ListReviewBySpuIDResp, err error)
+	ListReviewBySkuID(ctx context.Context, Req *review.ListReviewBySkuIDReq, callOptions ...callopt.Option) (r *review.ListReviewBySkuIDResp, err error)
 }
 
 // NewClient creates a client for the service defined in IDL.
@@ -46,4 +49,19 @@ type kReviewServiceClient struct {
 func (p *kReviewServiceClient) CreateReview(ctx context.Context, Req *review.CreateReviewRequest, callOptions ...callopt.Option) (r *review.CreateReviewResponse, err error) {
 	ctx = client.NewCtxWithCallOptions(ctx, callOptions)
 	return p.kClient.CreateReview(ctx, Req)
+}
+
+func (p *kReviewServiceClient) ListReviewByStoreID(ctx context.Context, Req *review.ListReviewByStoreIDReq, callOptions ...callopt.Option) (r *review.ListReviewByStoreIDResp, err error) {
+	ctx = client.NewCtxWithCallOptions(ctx, callOptions)
+	return p.kClient.ListReviewByStoreID(ctx, Req)
+}
+
+func (p *kReviewServiceClient) ListReviewBySpuID(ctx context.Context, Req *review.ListReviewBySpuIDReq, callOptions ...callopt.Option) (r *review.ListReviewBySpuIDResp, err error) {
+	ctx = client.NewCtxWithCallOptions(ctx, callOptions)
+	return p.kClient.ListReviewBySpuID(ctx, Req)
+}
+
+func (p *kReviewServiceClient) ListReviewBySkuID(ctx context.Context, Req *review.ListReviewBySkuIDReq, callOptions ...callopt.Option) (r *review.ListReviewBySkuIDResp, err error) {
+	ctx = client.NewCtxWithCallOptions(ctx, callOptions)
+	return p.kClient.ListReviewBySkuID(ctx, Req)
 }

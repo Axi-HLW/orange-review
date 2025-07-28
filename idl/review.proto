@@ -17,6 +17,9 @@ message CreateReviewRequest {
    string PicInfo = 7;
    string VideoInfo = 8;
    bool Anonymous = 9;
+   int64 SkuId = 10;
+   int64 SpuId = 11;
+   int64 StoreId = 12;
 }
 
 message CreateReviewResponse {
@@ -26,5 +29,65 @@ message CreateReviewResponse {
 }
 
 service ReviewService {
+   // 创建评价
    rpc CreateReview(CreateReviewRequest) returns(CreateReviewResponse) {}
+
+   // 根据商家ID分页
+   rpc ListReviewByStoreID(ListReviewByStoreIDReq) returns(ListReviewByStoreIDResp) {}
+
+   // 根据SPU分页
+   rpc ListReviewBySpuID(ListReviewBySpuIDReq) returns(ListReviewBySpuIDResp) {}
+
+   // 根据SKU分页
+   rpc ListReviewBySkuID(ListReviewBySkuIDReq) returns(ListReviewBySkuIDResp) {}
+}
+
+message ListReviewByStoreIDReq {
+	int64 storeID = 1 [(api.form)="store_id"];
+	int32 page = 2 [(api.form)="page"];
+	int32 pageSize = 3 [(api.form)="page_size"];
+}
+
+message ListReviewByStoreIDResp {
+	repeated ReviewInfo list = 1;
+
+   base.BaseResp BaseResp = 255;
+}
+
+message ListReviewBySpuIDReq {
+	int64 spuID = 1 [(api.form)="spu_id"];
+	int32 page = 2 [(api.form)="page"];
+	int32 pageSize = 3 [(api.form)="page_size"];
+}
+
+message ListReviewBySpuIDResp {
+	repeated ReviewInfo list = 1;
+
+   base.BaseResp BaseResp = 255;
+}
+
+message ListReviewBySkuIDReq {
+	int64 skuID = 1 [(api.form)="sku_id"];
+	int32 page = 2 [(api.form)="page"];
+	int32 pageSize = 3 [(api.form)="page_size"];
+}
+
+message ListReviewBySkuIDResp {
+	repeated ReviewInfo list = 1;
+
+   base.BaseResp BaseResp = 255;
+}
+
+// 评价信息
+message ReviewInfo{
+	int64 reviewID = 1;
+	int64 userID = 2;
+	int64 orderID = 3;
+	int32 score = 4;
+	int32 serviceScore = 5;
+	int32 expressScore = 6;
+	string content = 7;
+	string picInfo = 8;
+	string videoInfo = 9;
+	int32 status = 10;
 }

@@ -2,6 +2,7 @@ package main
 
 import (
 	"net"
+	"os"
 	"time"
 
 	"github.com/cloudwego/kitex/pkg/klog"
@@ -62,18 +63,30 @@ func kitexInit() (opts []server.Option) {
 	logger := kitexlogrus.NewLogger()
 	klog.SetLogger(logger)
 	klog.SetLevel(conf.LogLevel())
-	asyncWriter := &zapcore.BufferedWriteSyncer{
-		WS: zapcore.AddSync(&lumberjack.Logger{
-			Filename:   conf.GetConf().Kitex.LogFileName,
-			MaxSize:    conf.GetConf().Kitex.LogMaxSize,
-			MaxBackups: conf.GetConf().Kitex.LogMaxBackups,
-			MaxAge:     conf.GetConf().Kitex.LogMaxAge,
-		}),
-		FlushInterval: time.Minute,
-	}
-	klog.SetOutput(asyncWriter)
+
+	// 创建文件输出
+	fileWriter := zapcore.AddSync(&lumberjack.Logger{
+		Filename:   conf.GetConf().Kitex.LogFileName,
+		MaxSize:    conf.GetConf().Kitex.LogMaxSize,
+		MaxBackups: conf.GetConf().Kitex.LogMaxBackups,
+		MaxAge:     conf.GetConf().Kitex.LogMaxAge,
+	})
+
+	// 创建控制台输出
+	consoleWriter := zapcore.AddSync(os.Stdout)
+
+	// 组合多个输出（文件+控制台）
+	multiWriter := zapcore.NewMultiWriteSyncer(
+		&zapcore.BufferedWriteSyncer{
+			WS:            fileWriter,
+			FlushInterval: time.Minute,
+		},
+		consoleWriter,
+	)
+
+	klog.SetOutput(multiWriter)
 	server.RegisterShutdownHook(func() {
-		asyncWriter.Sync()
+		multiWriter.Sync()
 	})
 	return
 }
