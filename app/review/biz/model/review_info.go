@@ -3,11 +3,18 @@ package model
 import (
 	"context"
 	"encoding/json"
+	"errors"
+	"fmt"
+	"strconv"
+	"strings"
 	"time"
 
 	"github.com/cloudwego/kitex/pkg/klog"
 	"github.com/elastic/go-elasticsearch/v8/typedapi/types"
+	"github.com/redis/go-redis/v9"
 	"github.com/yzc/orange-review/app/review/biz/dal/es"
+	myRedis "github.com/yzc/orange-review/app/review/biz/dal/redis"
+	"golang.org/x/sync/singleflight"
 	"gorm.io/gorm"
 )
 
@@ -102,8 +109,8 @@ func GetReviewByOrderId(db *gorm.DB, ctx context.Context, orderId int64) (*[]Rev
 
 // ListReviewByStoreID 根据storeID 分页查询评价
 func ListReviewByStoreID(ctx context.Context, storeID int64, offset, limit int) ([]*ReviewInfo, error) {
-	return listReviewByStoreIDFromES(ctx, storeID, offset, limit) // 第一版直接查ES
-	// return r.getData2(ctx, storeID, offset, limit) // 第二版增加缓存和singleflight
+	// return listReviewByStoreIDFromES(ctx, storeID, offset, limit) // 第一版直接查ES
+	return listReviewByStoreIDFromESV2(ctx, storeID, offset, limit) // 第二版增加缓存和singleflight
 }
 
 func listReviewByStoreIDFromES(ctx context.Context, storeID int64, offset, limit int) ([]*ReviewInfo, error) {
@@ -124,7 +131,7 @@ func listReviewByStoreIDFromES(ctx context.Context, storeID int64, offset, limit
 			},
 		}).
 		Do(ctx)
-	klog.Infof("--> es search: %+v %+v\n", resp, err)
+	// klog.Infof("--> es search: %+v %+v\n", resp, err)
 	if err != nil {
 		return nil, err
 	}
@@ -139,7 +146,7 @@ func listReviewByStoreIDFromES(ctx context.Context, storeID int64, offset, limit
 			klog.Errorf("json.Unmarshal(hit.Source_, tmp) failed, err:%v", err)
 			continue
 		}
-		klog.CtxInfof(ctx, "es result: %+v\n", tmp)
+		// klog.CtxInfof(ctx, "es result: %+v\n", tmp)
 		ri := &ReviewInfo{
 			ID:             tmp.ID,
 			CreateBy:       tmp.CreateBy,
@@ -181,26 +188,83 @@ func listReviewByStoreIDFromES(ctx context.Context, storeID int64, offset, limit
 	return list, nil
 }
 
-// // 自定义UnmarshalJSON方法
-// func (ri *ReviewInfo) UnmarshalJSON(data []byte) error {
-// 	type Alias ReviewInfo
-// 	aux := &struct {
-// 		CreateAt string `json:"create_at"`
-// 		UpdateAt string `json:"update_at"`
-// 		*Alias
-// 	}{
-// 		Alias: (*Alias)(ri),
-// 	}
-// 	if err := json.Unmarshal(data, &aux); err != nil {
-// 		return err
-// 	}
+func listReviewByStoreIDFromESV2(ctx context.Context, storeID int64, offset, limit int) ([]*ReviewInfo, error) {
+	key := fmt.Sprintf("review:%d:%d:%d", storeID, offset, limit)
+	dataByte, err := getDataBySingleFlight(ctx, key)
+	if err != nil {
+		return nil, err
+	}
+	var reviewList []*ReviewInfo
+	err = json.Unmarshal(dataByte, &reviewList)
+	if err != nil {
+		return nil, err
+	}
+	return reviewList, nil
+}
 
-// 自定义时间解析
-// layout := "2006-01-02 15:04:05.999"
-// createAt, _ := time.Parse(layout, aux.CreateAt)
-// updateAt, _ := time.Parse(layout, aux.UpdateAt)
+var g singleflight.Group
 
-// 	ri.CreateAt = createAt
-// 	ri.UpdateAt = updateAt
-// 	return nil
-// }
+func getDataBySingleFlight(ctx context.Context, key string) ([]byte, error) {
+	val, err, _ := g.Do(key, func() (interface{}, error) {
+		data, err := getDataFromCache(ctx, key)
+		if err == nil {
+			klog.Infof("getDataBySingleFlight cache hit. key: %s", key)
+			return data, nil
+		}
+		klog.Infof("getDataFromCache err: %v", err)
+		if errors.Is(err, redis.Nil) {
+			klog.Infof("getDataBySingleFlight cache miss. key: %s", key)
+			_, storeID, offset, limit, err := parseKey(key)
+			if err != nil {
+				return nil, err
+			}
+			reviewList, err := listReviewByStoreIDFromES(ctx, storeID, offset, limit)
+			if err == nil {
+				data, err = json.Marshal(reviewList)
+				if err != nil {
+					return nil, err
+				}
+				err = setCache(ctx, key, data)
+				return data, err
+			}
+			return nil, err
+		}
+		klog.Infof("getDataBySingleFlight err: %v", err)
+		return nil, err
+	})
+	// klog.Infof("getDataBySingleFlight ret: v:%v err:%v shared:%v\n", val, err, shared)
+	if err != nil {
+		return nil, err
+	}
+	return val.([]byte), nil
+}
+
+func setCache(ctx context.Context, key string, data []byte) error {
+	return myRedis.RedisClient.Set(ctx, key, data, time.Second*60).Err()
+}
+
+func getDataFromCache(ctx context.Context, key string) ([]byte, error) {
+	klog.Infof("getDataFromCache key: %s\n", key)
+	return myRedis.RedisClient.Get(ctx, key).Bytes()
+}
+
+func parseKey(key string) (string, int64, int, int, error) {
+	values := strings.Split(key, ":")
+	if len(values) < 4 {
+		return "", 0, 0, 0, errors.New("invalid key")
+	}
+	index, storeID, offsetStr, limitStr := values[0], values[1], values[2], values[3]
+	offset, err := strconv.Atoi(offsetStr)
+	if err != nil {
+		return "", 0, 0, 0, err
+	}
+	limit, err := strconv.Atoi(limitStr)
+	if err != nil {
+		return "", 0, 0, 0, err
+	}
+	storeIDInt, err := strconv.ParseInt(storeID, 10, 64)
+	if err != nil {
+		return "", 0, 0, 0, err
+	}
+	return index, storeIDInt, offset, limit, nil
+}
