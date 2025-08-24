@@ -34,7 +34,7 @@ C端：
 | 接口描述 | 方法 | 请求路径 | 解释 |
 | --- | --- | --- | --- |
 | 创建评价 | POST | /v1/review | 用户发表评价 |
-| 获取商品评价 | GET | /v1/spu/{spu_id}/reviews | 根据SPU_ID查询评价列表（只显示status=20的评价） |
+| 获取商品评价 | GET | /v1/spu/{spu_id}/reviews | 根据SPU_ID查询评价列表（只显示status=10或20的评价） |
 
 B端（商家后台）：
 
@@ -54,8 +54,6 @@ O端：
 | 查看申诉 | GET | /v1/status/{status}/appeals | 根据申诉状态查看的申诉 |
 | 审核评价 | POST | /v1/reviews/audit | 修改评价状态 |
 | 查看评价 | GET | /v1/status/{status}/reviews | 根据评价状态查看的评价 |
-
-
 
 
 # 数据库表设计
@@ -159,6 +157,7 @@ type ReviewReplyInfo struct {
 - 字节CloudWeGo官网：[字节CloudWeGo](https://cloudwego.cn/zh/)
 - 字节官网项目地址：[字节微服务项目Demo](https://github.com/cloudwego/biz-demo)
 
-## ES
+# 面试
 
+- 面试问题预判：[面试问题预判](./blog/interview.md)
 - 查找流程 & 插入流程：[ES的查找与插入笔记](./blog/es.md)
