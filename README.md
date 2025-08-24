@@ -6,8 +6,8 @@
 
 业务上包含C端（用户端）、B端（商家端）以及O端（平台端），其中：
 - C端：创建评价、查看评价
-- B端：查看评价、投诉评价
-- O端：查看评价、处理投诉、删除评价
+- B端：查看评价、回复评价、投诉评价、查看投诉
+- O端：查看申诉、处理投诉、查看评价、审核评价
 
 ---
 
@@ -29,8 +29,127 @@
 
 # API概览
 
+C端：
+
+| 接口描述 | 方法 | 请求路径 | 解释 |
+| --- | --- | --- | --- |
+| 创建评价 | POST | /v1/review | 用户发表评价 |
+| 获取商品评价 | GET | /v1/spu/{spu_id}/reviews | 根据SPU_ID查询评价列表（只显示status=20的评价） |
+
+B端（商家后台）：
+
+| 接口描述 | 方法 | 请求路径 | 解释 |
+| --- | --- | --- | --- |
+| 回复评价 | POST | /v1/review/reply | 回复评价 |
+| 申诉评价 | POST | /v1/review/appeal | 申诉评价 |
+| 查看投诉 | GET | /v1/store/{store_id}/appeals | 浏览当前storeID发布的所有投诉 |
+| 查看评价 | GET | /v1/store/{store_id}/reviews | 根据店铺ID查询评价列表 |
+| 获取商品评价 | GET | /v1/spu/{spu_id}/reviews | 根据SPU_ID查询评价列表 |
+
+O端：
+
+| 接口描述 | 方法 | 请求路径 | 解释 |
+| --- | --- | --- | --- |
+| 审核申诉 | POST | /v1/appeal/audit | 修改申诉的状态 |
+| 查看申诉 | GET | /v1/status/{status}/appeals | 根据申诉状态查看的申诉 |
+| 审核评价 | POST | /v1/reviews/audit | 修改评价状态 |
+| 查看评价 | GET | /v1/status/{status}/reviews | 根据评价状态查看的评价 |
+
+
+
 
 # 数据库表设计
+
+这张图是用dbdesigner做的：https://www.dbdesigner.net/
+
+![数据库表设计](./picture/review_db.png)
+
+字段详细解释：
+
+```go
+// ReviewAppealInfo 评论申诉表
+type ReviewAppealInfo struct {
+	ID        int64      // 主键
+	CreateBy  string     // 创建方标识
+	UpdateBy  string     // 更新方标识
+	CreateAt  time.Time  // 创建时间
+	UpdateAt  time.Time  // 更新时间
+	DeleteAt  *time.Time // 逻辑删除标记
+	Version   int32      // 乐观锁标记
+	ExtJSON   string     // 信息扩展
+	CtrlJSON  string     // 控制扩展
+
+	AppealID  int64      // 申诉id
+	ReviewID  int64      // 评价id
+	StoreID   int64      // 店铺id
+	Status    int32      // 状态:10待审核；20申诉通过；30申诉驳回
+	Reason    string     // 申诉原因类别
+	Content   string     // 申诉内容描述
+	PicInfo   string     // 媒体信息：图片
+	VideoInfo string     // 媒体信息：视频
+	OpRemarks string     // 运营备注
+	OpUser    string     // 运营者标识
+}
+```
+
+```go
+// ReviewInfo 评价表
+type ReviewInfo struct {
+	ID             int64      // 主键
+	CreateBy       string     // 创建方标识
+	UpdateBy       string     // 更新方标识
+	CreateAt       time.Time  // 创建时间
+	UpdateAt       time.Time  // 更新时间
+	DeleteAt       *time.Time // 逻辑删除标记
+	Version        int32      // 乐观锁标记
+	ExtJSON        string     // 信息扩展
+	CtrlJSON       string     // 控制扩展    
+
+	ReviewID       int64      // 评价id
+	Content        string     // 评价内容
+	Score          int32      // 评分
+	ServiceScore   int32      // 商家服务评分
+	ExpressScore   int32      // 物流评分
+	HasMedia       int32      // 是否有图或视频
+	OrderID        int64      // 订单id
+	SkuID          int64      // sku id
+	SpuID          int64      // spu id
+	StoreID        int64      // 店铺id
+	UserID         int64      // 用户id
+	Anonymous      int32      // 是否匿名
+	Tags           string     // 标签json
+	PicInfo        string     // 媒体信息：图片
+	VideoInfo      string     // 媒体信息：视频
+	Status         int32      // 状态:10待审核；20审核通过；30审核不通过；40隐藏
+	IsDefault      int32      // 是否默认评价
+	HasReply       int32      // 是否有商家回复:0无;1有
+	OpReason       string     // 运营审核拒绝原因
+	OpRemarks      string     // 运营备注
+	OpUser         string     // 运营者标识
+	GoodsSnapshoot string     // 商品快照信息
+}
+```
+
+```go
+type ReviewReplyInfo struct {
+	ID        int64      // 主键
+	CreateBy  string     // 创建方标识
+	UpdateBy  string     // 更新方标识
+	CreateAt  time.Time  // 创建时间
+	UpdateAt  time.Time  // 更新时间
+	DeleteAt  *time.Time // 逻辑删除标记
+	Version   int32      // 乐观锁标记
+	ExtJSON   string     // 信息扩展
+	CtrlJSON  string     // 控制扩展
+
+	ReplyID   int64      // 回复id
+	ReviewID  int64      // 评价id
+	StoreID   int64      // 店铺id
+	Content   string     // 评价内容
+	PicInfo   string     // 媒体信息：图片
+	VideoInfo string     // 媒体信息：视频
+}
+```
 
 # 参考
 
