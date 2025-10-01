@@ -23,4 +23,4 @@ redis:
   db: 0
 
 elasticsearch:
-  addr: "http://127.0.0.1:9200"
+  addr: "http://81.71.163.20:9200"
